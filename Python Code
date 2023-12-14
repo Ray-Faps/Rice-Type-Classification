@@ -1,1 +1,49 @@
+```Py
+#Load Libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns
 
+#Load Data
+df = pd.read_csv('./ricedataset.csv')
+df.head()
+
+#Identify number of Classes
+df.CLASS.unique()
+
+#Key Statistics
+df.describe()
+
+#Visualization of Correlations
+fig = plt.figure(figsize=(15,5))
+sns.heatmap(df.corr(),annot=True,cmap="Reds")
+
+#Create x and y variables
+X = df.drop('CLASS',axis=1).to_numpy()
+y = df['CLASS'].to_numpy()
+
+#Create Train and Test datasets
+from sklearn.model_selection import train_test_split  
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y,test_size = 0.20,random_state=100)
+
+#Scale the data
+from sklearn.preprocessing import StandardScaler  
+sc = StandardScaler()  
+x_train2 = sc.fit_transform(X_train)
+x_test2 = sc.transform(X_test)
+
+#Script for Decision Tree
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import classification_report, confusion_matrix  
+
+for name,method in [('DT', DecisionTreeClassifier(random_state=100))]: 
+    method.fit(x_train2,y_train)
+    predict = method.predict(x_test2)
+    target_names=['Cammeo','Osmancik']
+    print('\nEstimator: {}'.format(name)) 
+    print(confusion_matrix(y_test,predict))  
+    print(classification_report(y_test,predict,target_names=target_names))
+
+```
